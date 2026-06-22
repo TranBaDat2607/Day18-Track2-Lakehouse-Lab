@@ -1,0 +1,26 @@
+Lakehouse on-disk layout — lightweight path (delta-rs + DuckDB + Polars)
+Root: C:\vinai_lakehouse
+  (auto-diverted from the repo's _lakehouse/ because the Windows username
+   'COLOR FULL' has a space, which delta-rs can't write to — see
+   scripts/lakehouse.py _default_root(). Same on-disk Delta format either way.)
+
+medallion/
+  bronze/llm_calls_raw/
+    _delta_log/   (1 commit JSON file(s))
+    *.parquet      (1 data file(s))
+  silver/llm_calls/
+    _delta_log/   (1 commit JSON file(s))
+    date=*/        (8 date partitions, 8 parquet files total)
+  gold/llm_daily_metrics/
+    _delta_log/   (2 commit JSON file(s))
+    date=*/        (8 date partitions, 16 parquet files total)
+
+scratch/   (tables built by NB1-NB3)
+  users_delta/  (2 commit(s) in _delta_log/)
+  events_smallfiles/  (202 commit(s) in _delta_log/)
+  customers_tt/  (5 commit(s) in _delta_log/)
+
+Row counts (verified):
+  bronze  llm_calls_raw         200,000 rows
+  silver  llm_calls             190,052 rows
+  gold    llm_daily_metrics          24 rows
